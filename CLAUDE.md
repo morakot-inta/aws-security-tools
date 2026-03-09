@@ -11,20 +11,23 @@ Scope: EC2, VPC, IAM, S3.
 ## How to Run
 
 ```bash
-# Run full assessment (uses current AWS credentials)
+# One-time setup (installs checkov via pip3 --user, CloudShell-compatible)
+bash setup.sh
+
+# Run full assessment (credentials auto-injected in CloudShell)
 ./assess.sh
 
-# With specific profile and region
-./assess.sh --profile my-profile --region ap-southeast-1
+# Override region
+./assess.sh --region ap-southeast-1
 
 # Output lands in output/report_YYYYMMDD_HHMMSS.csv
 ```
 
 ## Prerequisites
 
-- `aws` CLI configured with credentials
-- `python3` (stdlib only — no pip installs needed)
-- `checkov` installed (`pip install checkov`)
+- AWS CloudShell (credentials auto-injected, `aws` and `python3` pre-installed)
+- `checkov` — installed by `setup.sh` via `pip3 install checkov --user`
+- `setup.sh` also adds `~/.local/bin` to `PATH` for the session
 
 ## Architecture — 4-Stage Pipeline
 
