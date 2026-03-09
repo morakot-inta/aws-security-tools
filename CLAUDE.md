@@ -2,22 +2,76 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repository Purpose
+## Purpose
 
-AWS security tooling project. This repository is in early stages — tooling, structure, and conventions will be established as the project grows.
+AWS security assessment tool that exports live AWS resources via CLI, converts them to a CloudFormation template, scans with Checkov, and produces a CSV report showing both PASSED and FAILED checks.
+
+Scope: EC2, VPC, IAM, S3.
+
+## How to Run
+
+```bash
+# Run full assessment (uses current AWS credentials)
+./assess.sh
+
+# With specific profile and region
+./assess.sh --profile my-profile --region ap-southeast-1
+
+# Output lands in output/report_YYYYMMDD_HHMMSS.csv
+```
+
+## Prerequisites
+
+- `aws` CLI configured with credentials
+- `python3` (stdlib only — no pip installs needed)
+- `checkov` installed (`pip install checkov`)
+
+## Architecture — 4-Stage Pipeline
+
+```
+AWS Account
+    │
+    ▼
+[Stage 1] scripts/export_aws.sh
+  aws ec2/iam/s3api describe/list → output/raw/*.json
+    │
+    ▼
+[Stage 2] scripts/convert_to_cfn.py
+  Raw JSON → output/template/cfn_template.json (CloudFormation format)
+    │
+    ▼
+[Stage 3] scripts/run_checkov.sh
+  checkov --framework cloudformation -o json → output/checkov_result.json
+    │
+    ▼
+[Stage 4] scripts/generate_report.py
+  Checkov JSON (passed_checks + failed_checks) → output/report_YYYYMMDD_HHMMSS.csv
+```
+
+### Why this design
+
+- **CloudFormation as intermediate format**: Checkov has rich built-in CFN checks for all 4 services. The converter maps AWS CLI response field names to exact CFN property names so checks fire correctly.
+- **Checkov `-o json` not `-o csv`**: Checkov's native CSV only includes failed checks. JSON output always contains both `passed_checks` and `failed_checks` arrays — Stage 4 reads both.
+- **Python stdlib only**: No `pip install` required for the converter or reporter — only `json`, `csv`, `datetime` from stdlib.
+- **S3 export is composite**: `list-buckets` gives names, then per-bucket calls (`get-bucket-encryption`, `get-bucket-versioning`, `get-bucket-logging`, `get-bucket-acl`, `get-public-access-block`) enrich the data before writing `output/raw/s3_buckets.json`.
+
+### CSV Output Columns
+
+```
+Status, Check ID, Check Name, Resource Type, Resource Name, Severity, Guideline
+```
+
+Sorted: FAILED first, then PASSED, grouped by resource name, then check ID.
+
+### CloudFormation Logical ID Convention
+
+Resource IDs/names are sanitized to match `[A-Za-z0-9]+` (CFN requirement). Examples:
+- EC2 instance `i-0abc123` → `EC2Instancei0abc123`
+- S3 bucket `my-bucket` → `S3Bucketmybucket`
 
 ## Git Workflow
 
-- Branch: `main` (single branch, push directly)
+- Branch: `main` (push directly, no PRs needed)
 - Remote: `git@github.com:morakot-inta/aws-security-tools.git`
-- Always commit with clean, typed messages: `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`
-- Push to GitHub after every logical commit to maintain a saved version
-
-## Commit Message Format
-
-```
-<type>: <short summary>
-
-- Detail 1
-- Detail 2
-```
+- Commit format: `<type>: <short summary>` with `feat:`, `fix:`, `docs:`, `refactor:`, `chore:`
+- Push to GitHub after every logical commit
