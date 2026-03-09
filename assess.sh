@@ -74,9 +74,17 @@ REPORT=$(python3 "$SCRIPT_DIR/scripts/generate_report.py" \
     --checkov-result "$OUTPUT_DIR/checkov_result.json" \
     --output-dir "$OUTPUT_DIR")
 
+# ── Stage 5: Generate HTML dashboard ──────────────────────────────────────────
+echo ""
+echo "[assess] ── Stage 5: Generating HTML dashboard ──"
+DASHBOARD=$(python3 "$SCRIPT_DIR/scripts/generate_html.py" \
+    --csv "$REPORT" \
+    --output-dir "$OUTPUT_DIR")
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo " Assessment complete"
-echo " Report : $REPORT"
+echo " CSV     : $REPORT"
+echo " HTML    : $DASHBOARD"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

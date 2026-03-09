@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AWS security assessment tool that exports live AWS resources via CLI, converts them to a CloudFormation template, scans with Checkov, and produces a CSV report showing both PASSED and FAILED checks.
 
-Scope: EC2, VPC, IAM, S3.
+Scope: EC2, VPC, S3, RDS.
 
 ## How to Run
 
@@ -36,7 +36,7 @@ AWS Account
     │
     ▼
 [Stage 1] scripts/export_aws.sh
-  aws ec2/iam/s3api describe/list → output/raw/*.json
+  aws ec2/s3api describe/list → output/raw/*.json
     │
     ▼
 [Stage 2] scripts/convert_to_cfn.py
@@ -53,7 +53,7 @@ AWS Account
 
 ### Why this design
 
-- **CloudFormation as intermediate format**: Checkov has rich built-in CFN checks for all 4 services. The converter maps AWS CLI response field names to exact CFN property names so checks fire correctly.
+- **CloudFormation as intermediate format**: Checkov has rich built-in CFN checks for EC2, VPC, and S3. The converter maps AWS CLI response field names to exact CFN property names so checks fire correctly.
 - **Checkov `-o json` not `-o csv`**: Checkov's native CSV only includes failed checks. JSON output always contains both `passed_checks` and `failed_checks` arrays — Stage 4 reads both.
 - **Python stdlib only**: No `pip install` required for the converter or reporter — only `json`, `csv`, `datetime` from stdlib.
 - **S3 export is composite**: `list-buckets` gives names, then per-bucket calls (`get-bucket-encryption`, `get-bucket-versioning`, `get-bucket-logging`, `get-bucket-acl`, `get-public-access-block`) enrich the data before writing `output/raw/s3_buckets.json`.

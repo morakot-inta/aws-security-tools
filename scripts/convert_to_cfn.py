@@ -289,6 +289,40 @@ def convert_iam_groups(data, resources):
         }
 
 
+# ── RDS Instances ─────────────────────────────────────────────────────────────
+def convert_rds_instances(data, resources):
+    for db in data.get("DBInstances", []):
+        dbid = db.get("DBInstanceIdentifier", "unknown")
+        logical_id = sanitize_id("RDSInstance", dbid)
+
+        props = {
+            "DBInstanceIdentifier": dbid,
+            "DBInstanceClass":      db.get("DBInstanceClass", ""),
+            "Engine":               db.get("Engine", ""),
+            "EngineVersion":        db.get("EngineVersion", ""),
+            "StorageEncrypted":     db.get("StorageEncrypted", False),
+            "PubliclyAccessible":   db.get("PubliclyAccessible", True),
+            "MultiAZ":              db.get("MultiAZ", False),
+            "BackupRetentionPeriod": db.get("BackupRetentionPeriod", 0),
+            "DeletionProtection":   db.get("DeletionProtection", False),
+            "AutoMinorVersionUpgrade": db.get("AutoMinorVersionUpgrade", False),
+            "CopyTagsToSnapshot":   db.get("CopyTagsToSnapshot", False),
+            "EnableIAMDatabaseAuthentication": db.get("IAMDatabaseAuthenticationEnabled", False),
+        }
+
+        monitoring = db.get("MonitoringInterval", 0)
+        if monitoring:
+            props["MonitoringInterval"] = monitoring
+
+        if db.get("PerformanceInsightsEnabled"):
+            props["EnablePerformanceInsights"] = True
+
+        resources[logical_id] = {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": props,
+        }
+
+
 # ── S3 Buckets ────────────────────────────────────────────────────────────────
 def convert_s3_buckets(data, resources):
     for bucket in data.get("Buckets", []):
@@ -357,10 +391,7 @@ def main():
         ("vpc_vpcs.json",         convert_vpcs),
         ("vpc_subnets.json",      convert_subnets),
         ("vpc_nacls.json",        convert_nacls),
-        ("iam_roles.json",        convert_iam_roles),
-        ("iam_users.json",        convert_iam_users),
-        ("iam_policies.json",     convert_iam_policies),
-        ("iam_groups.json",       convert_iam_groups),
+        ("rds_instances.json",    convert_rds_instances),
         ("s3_buckets.json",       convert_s3_buckets),
     ]
 

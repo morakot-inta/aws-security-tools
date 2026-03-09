@@ -98,7 +98,7 @@ def main():
 
     failed_count = sum(1 for r in rows if r["Status"] == "FAILED")
     passed_count = sum(1 for r in rows if r["Status"] == "PASSED")
-    print(f"[report] FAILED: {failed_count} | PASSED: {passed_count} | Total: {len(rows)}")
+    print(f"[report] FAILED: {failed_count} | PASSED: {passed_count} | Total: {len(rows)}", file=sys.stderr)
 
     # Print path to stdout so assess.sh can capture it
     print(report_path)

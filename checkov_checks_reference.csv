@@ -1,0 +1,29 @@
+Service,Resource Type,Check ID,Check Name,Severity,What It Tests
+EC2,AWS::EC2::Instance,CKV_AWS_79,Ensure IMDSv2 is enforced,MEDIUM,MetadataOptions.HttpTokens must be 'required' (blocks IMDSv1)
+EC2,AWS::EC2::Instance,CKV_AWS_8,Ensure monitoring is enabled,LOW,Monitoring.State must be 'enabled' (CloudWatch detailed monitoring)
+EC2,AWS::EC2::Instance,CKV_AWS_126,Ensure EC2 instance profile is attached,LOW,IamInstanceProfile must be set
+EC2,AWS::EC2::Instance,CKV_AWS_135,Ensure EBS optimization is enabled,LOW,EbsOptimized must be true
+EC2,AWS::EC2::SecurityGroup,CKV_AWS_24,No SSH open to the world,HIGH,No ingress rule allows 0.0.0.0/0 or ::/0 on port 22
+EC2,AWS::EC2::SecurityGroup,CKV_AWS_25,No RDP open to the world,HIGH,No ingress rule allows 0.0.0.0/0 or ::/0 on port 3389
+EC2,AWS::EC2::SecurityGroup,CKV_AWS_277,No unrestricted HTTP/HTTPS ingress,MEDIUM,No ingress rule allows 0.0.0.0/0 on ports 80/443/8080/8443
+EC2,AWS::EC2::Volume,CKV_AWS_3,EBS volume is encrypted,HIGH,Encrypted must be true
+EC2,AWS::EC2::Volume,CKV_AWS_189,EBS volume encrypted with customer-managed KMS key,MEDIUM,KmsKeyId must be set to a customer-managed CMK
+RDS,AWS::RDS::DBInstance,CKV_AWS_16,RDS storage encryption enabled,HIGH,StorageEncrypted must be true
+RDS,AWS::RDS::DBInstance,CKV_AWS_17,RDS instance is not publicly accessible,HIGH,PubliclyAccessible must be false
+RDS,AWS::RDS::DBInstance,CKV_AWS_157,RDS Multi-AZ enabled,MEDIUM,MultiAZ must be true
+RDS,AWS::RDS::DBInstance,CKV_AWS_133,RDS automated backups enabled,MEDIUM,BackupRetentionPeriod must be > 0
+RDS,AWS::RDS::DBInstance,CKV_AWS_293,RDS deletion protection enabled,MEDIUM,DeletionProtection must be true
+RDS,AWS::RDS::DBInstance,CKV_AWS_118,RDS enhanced monitoring enabled,LOW,MonitoringInterval must be > 0
+RDS,AWS::RDS::DBInstance,CKV_AWS_161,RDS IAM database authentication enabled,MEDIUM,EnableIAMDatabaseAuthentication must be true
+RDS,AWS::RDS::DBInstance,CKV_AWS_226,RDS auto minor version upgrade enabled,LOW,AutoMinorVersionUpgrade must be true
+RDS,AWS::RDS::DBInstance,CKV_AWS_353,RDS Performance Insights enabled,LOW,EnablePerformanceInsights must be true
+S3,AWS::S3::Bucket,CKV_AWS_19,S3 bucket server-side encryption enabled,HIGH,BucketEncryption must be configured
+S3,AWS::S3::Bucket,CKV_AWS_145,S3 bucket encrypted with KMS,HIGH,BucketEncryption rule must use aws:kms
+S3,AWS::S3::Bucket,CKV_AWS_53,S3 block public ACLs,HIGH,PublicAccessBlockConfiguration.BlockPublicAcls must be true
+S3,AWS::S3::Bucket,CKV_AWS_54,S3 block public bucket policy,HIGH,PublicAccessBlockConfiguration.BlockPublicPolicy must be true
+S3,AWS::S3::Bucket,CKV_AWS_55,S3 ignore public ACLs,HIGH,PublicAccessBlockConfiguration.IgnorePublicAcls must be true
+S3,AWS::S3::Bucket,CKV_AWS_56,S3 restrict public buckets,HIGH,PublicAccessBlockConfiguration.RestrictPublicBuckets must be true
+S3,AWS::S3::Bucket,CKV_AWS_21,S3 versioning enabled,LOW,VersioningConfiguration.Status must be 'Enabled'
+S3,AWS::S3::Bucket,CKV_AWS_18,S3 access logging enabled,LOW,LoggingConfiguration must be set
+VPC,AWS::EC2::Subnet,CKV_AWS_130,Subnet does not auto-assign public IP,MEDIUM,MapPublicIpOnLaunch must be false
+VPC,AWS::EC2::VPC,CKV_AWS_148,VPC flow logs enabled,MEDIUM,At least one flow log must exist for the VPC
