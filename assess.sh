@@ -27,16 +27,18 @@ fi
 
 # ── Prerequisite checks ───────────────────────────────────────────────────────
 echo "[assess] Checking prerequisites..."
-for cmd in aws python3 checkov; do
+for cmd in aws python3; do
     if ! command -v "$cmd" &>/dev/null; then
         echo "[ERROR] '$cmd' not found." >&2
-        if [[ "$cmd" == "checkov" ]]; then
-            echo "        Run: pip3 install checkov --user" >&2
-            echo "        Then: export PATH=\"\$HOME/.local/bin:\$PATH\"" >&2
-        fi
         exit 1
     fi
 done
+
+if ! command -v checkov &>/dev/null; then
+    echo "[assess] checkov not found — installing via pip3..."
+    pip3 install checkov --user -q
+    echo "[assess] checkov installed."
+fi
 
 # ── Show active identity ──────────────────────────────────────────────────────
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "unknown")
