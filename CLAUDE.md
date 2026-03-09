@@ -14,11 +14,11 @@ Scope: EC2, VPC, IAM, S3.
 # One-time setup (installs checkov via pip3 --user, CloudShell-compatible)
 bash setup.sh
 
-# Run full assessment (credentials auto-injected in CloudShell)
+# Run full assessment — defaults to ap-southeast-1
 ./assess.sh
 
 # Override region
-./assess.sh --region ap-southeast-1
+./assess.sh --region us-east-1
 
 # Output lands in output/report_YYYYMMDD_HHMMSS.csv
 ```

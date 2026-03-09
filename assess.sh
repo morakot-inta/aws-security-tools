@@ -4,7 +4,7 @@
 set -euo pipefail
 
 # ── Defaults ──────────────────────────────────────────────────────────────────
-REGION=""
+REGION="ap-southeast-1"
 OUTPUT_DIR="$(pwd)/output"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
